@@ -3,7 +3,6 @@ require './bowling_game'
 class BowlingTest < Minitest::Test
   def setup
     @game=Game.new
-    @frames=[[1,2,score,],,,,,,,]
   end
   def test_roll_expect_spare
     score= @game.state(4,6)
@@ -27,11 +26,9 @@ class BowlingTest < Minitest::Test
     score_frame_current+=@game.roll(5)
     assert 15,score_frame_current
   end
-  def test_next_frame
-    @frames<<
-  end
 end
 
+=begin
 ----------------  
  tiro: 1        
  tiro2: 4       
@@ -62,5 +59,5 @@ end
  tiro: strike
  tiro2: spare
  total : 5
- --------------------------
-
+--------------------------
+=end
