@@ -1,36 +1,85 @@
 # frozen_string_literal: true
 
+# Main Class Game
 class Game
+  attr_reader :frames, :score
+
   def initialize
-    @frames = Array.new(10){initialize_frames} # [[roll1, roll2, score_total],[roll1, roll2, score_total]..]
+    @frames = Array.new(10) { init_frames_rolls(true) } # [[roll1, roll2, score_total],[roll1, roll2, score_total]..]
+    @score = 0
+    p @frames
   end
 
-  def frames
-    @frames
+  def init_frames_rolls(perfect_game)
+    if perfect_game == true
+      roll_one = 10
+      roll_two = 'strike'
+      return [roll_one, roll_two, 0]
+    end
+    
+    roll_one = rand(1..10)
+    roll_two = 'strike' if roll_one == 10
+    return [roll_one, roll_two, 0] if roll_two == 'strike'
+
+    roll_two = rand(1..(10 - roll_one))
+    roll_two = 'spare' if roll_one + roll_two == 10
+    return [roll_one, roll_two, 0] if roll_two == 'spare'
+
+    [roll_one, roll_two, 0]
   end
 
-  def initialize_frames()
-    [roll(),state(),0]
+  def calculate_score
+    (0..9).each do |frame|
+      current_frame = @frames[frame]
+      last_frame(frame) && break if frame == 9 # cuando se llama el frame 10
+
+      (0..2).each do |index|
+        @score += 10 + @frames[frame + 1][0] + spare_strike_num?(frame) if current_frame[index] == 'strike'
+        @score += (10 - current_frame[index - 1]) + @frames[frame + 1][0] if current_frame[index] == 'spare'
+        @score += current_frame[index] if current_frame[index].class != String
+        current_frame[index] = @score if index == 2
+      end
+    end
+
+    # [[4, 'spare', 10]] [[1,'spare',0]]
+
+    p @frames
+    p @score
   end
 
-  def roll(roll,roll2=0)
-    pins=10
+  def last_frame(frame)
+    return roll_twice(frame) if @frames[frame][0] == 10 # cuando es un strike
+    return roll_once(frame) if @frames[frame][1] == 'spare'
+
+    @frames[frame][2] = @score += (@frames[frame][0] + @frames[frame][1])
   end
 
-  def state (roll,roll2=0)
-    pins=10
-    pins-= (roll+roll2)
-    :strike if roll2==0 && pins==0
-    :spare if pins==0
-    :normal
+  def roll_once(frame)
+    @score += @frames[frame][0]
+    @score += (10 - @frames[frame][0])
+    @frames[frame][2] = rand(1..10)
+    @frames[frame][3] = @score += @frames[frame][2]
   end
 
-  def spare()
+  # [8,'spare',4,102]
+
+  def roll_twice(frame)
+    @score += @frames[frame][0]
+    @score += @frames[frame][1] = 10 # rand(1..10)
+    @score += @frames[frame][2] = 10 # rand(1..10)
+    @frames[frame].push(@score)
   end
 
-  def strike()
-    roll(next_frame)
+  # [10,4,8, 123]
+
+  def spare_strike_num?(frame)
+    frame_plus_one = @frames[frame + 1]
+    return 0 if frame_plus_one[1] == 'strike'
+    return 10 - frame_plus_one[0] if frame_plus_one[1] == 'spare'
+
+    frame_plus_one[1]
   end
 end
 
 new_game = Game.new
+new_game.calculate_score
