@@ -2,62 +2,21 @@ require 'minitest/autorun'
 require './bowling_game'
 class BowlingTest < Minitest::Test
   def setup
-    @game=Game.new
-  end
-  def test_roll_expect_spare
-    score= @game.state(4,6)
-    assert :spare,score
-  end
-  def test_roll_expect_strike
-    score= @game.state(10)
-    assert :strike,score
-  end
-  def test_roll_normal
-    score= @game.state(10)
-    assert :normal,score
-  end
-  def test_frames_count
-    frames= 10
-    assert frames,@game.frames.length
+    @frames=[[4, 1, 0], [1, 3, 0], [1, 4, 0], [9, "spare", 0], [1, 1, 0], [5, 1, 0], [9, "spare", 0], [7, 2, 0], [3, 1, 0], [4, 4, 0]]
+    @game=Game.new(@frames)
   end
 
-  def test_spare
-    score_frame_current=10
-    score_frame_current+=@game.roll(5)
-    assert 15,score_frame_current
+  def test_normal_game
+    score_game_current=71
+    assert_equal score_game_current, @game.calculate_score
+  end
+
+  def test_perfect_game
+    perfect_score=300
+    
+    #frames=[[10, "strike", 0], [10, "strike", 0], [10, "strike", 0], [10, "strike", 0], [10, "strike", 0], [10, "strike", 0], [10, "strike", 0], [10, "strike", 0], [10, "strike", 0], [10, "strike", 0]]
+    #game=Game.new(frames)
+
+    #assert_equal perfect_score, game.calculate_score
   end
 end
-
-=begin
-----------------  
- tiro: 1        
- tiro2: 4       
- total : 5      
- ------------------------
- -------------------------
- frame : 2
- tiro: 4
- tiro2: 5
- total : 14
- --------------------------
- -------------------------
- frame : 3
- tiro: 6
- tiro2: spare
- total : 29
- --------------------------
-
- -------------------------
- frame : 4
- tiro: 5
- tiro2: spare
- total : 
- --------------------------
-
- -------------------------
- frame : 5
- tiro: strike
- tiro2: spare
- total : 5
---------------------------
-=end
