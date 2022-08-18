@@ -4,26 +4,20 @@
 class Game
   attr_reader :frames, :score
 
-  def initialize
-    @frames = Array.new(10) { init_frames_rolls(true) } # [[roll1, roll2, score_total],[roll1, roll2, score_total]..]
+  def initialize(test=nil)
+    @frames = test || Array.new(10) { init_frames_rolls() } # [[roll1, roll2, score_total],[roll1, roll2, score_total]..]
     @score = 0
     p @frames
   end
 
-  def init_frames_rolls(perfect_game)
-    if perfect_game == true
-      roll_one = 10
-      roll_two = 'strike'
-      return [roll_one, roll_two, 0]
-    end
-    
+  def init_frames_rolls()
+    roll_two=0
     roll_one = rand(1..10)
     roll_two = 'strike' if roll_one == 10
-    return [roll_one, roll_two, 0] if roll_two == 'strike'
-
-    roll_two = rand(1..(10 - roll_one))
-    roll_two = 'spare' if roll_one + roll_two == 10
-    return [roll_one, roll_two, 0] if roll_two == 'spare'
+    #return [roll_one, roll_two, 0] if roll_two == 'strike'
+    roll_two = rand(1..(10 - roll_one)) unless roll_two.is_a?(String)
+    roll_two = 'spare' if roll_two.is_a?(Integer) && roll_one + roll_two == 10
+    #return [roll_one, roll_two, 0] if roll_two == 'spare'
 
     [roll_one, roll_two, 0]
   end
@@ -44,7 +38,7 @@ class Game
     # [[4, 'spare', 10]] [[1,'spare',0]]
 
     p @frames
-    p @score
+    @score
   end
 
   def last_frame(frame)
@@ -65,8 +59,8 @@ class Game
 
   def roll_twice(frame)
     @score += @frames[frame][0]
-    @score += @frames[frame][1] = 10 # rand(1..10)
-    @score += @frames[frame][2] = 10 # rand(1..10)
+    @score += @frames[frame][1] = rand(1..10)
+    @score += @frames[frame][2] = rand(1..10)
     @frames[frame].push(@score)
   end
 
@@ -82,4 +76,4 @@ class Game
 end
 
 new_game = Game.new
-new_game.calculate_score
+#new_game.calculate_score
